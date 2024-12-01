@@ -191,15 +191,7 @@ This should now pass the Kyverno policies you've set up in the repository.
 
 In addition to the validaton policies, this project also includes a Kyverno policy that automatically adds labels to Deployments and Services.
 
-This policy will add `created-by` labels to any new Deployment or Service that is created in the cluster:
-
-To verify if the policy had applied, let check the labels of the above applied `invalid-deployment.yaml`
-
-```
-kubectl create deployment nginx --image=nginx
-```
-
-After applying the Kyverno policy, you can verify that the labels were added to the Deployment:
+This policy will add `created-by` labels to any new Deployment or Service that is created in the cluster. To verify if the policy had applied, let check the labels of the above applied `invalid-deployment.yaml`
 
 ```
 kubectl get deployment nginx --show-labels
