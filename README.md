@@ -194,14 +194,14 @@ In addition to the validaton policies, this project also includes a Kyverno poli
 This policy will add `created-by` labels to any new Deployment or Service that is created in the cluster. To verify if the policy had applied, let check the labels of the above applied `invalid-deployment.yaml`
 
 ```
-kubectl get deployment nginx --show-labels
+kubectl get deployment invalid-nginx --show-labels
 ```
 
 The output should show the following labels:
 
 ```
 NAME          READY   UP-TO-DATE   AVAILABLE   AGE   LABELS
-fixed-nginx   0/1     0            0           11m   app=nginx,created-by=minikube-user,environment=production,team=platform
+invalid-nginx   0/1     0            0           11m   app=nginx,created-by=minikube-user,environment=production,team=platform
 ```
 
 This will display the labels applied to the Deployment, including the `created-by` added by the Kyverno mutate policy.
