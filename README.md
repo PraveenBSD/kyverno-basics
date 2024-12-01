@@ -9,7 +9,6 @@
 6. [Tutorial](#tutorial)
 7. [Alternatives to Kyverno](#alternatives-to-kyverno)
 8. [Conclusion](#conclusion)
-9. [Read More](#read-more)
 
 ## 📖 Introduction
 Kubernetes is a powerful platform for managing containerized workloads, but ensuring governance, compliance, and operational best practices across clusters can be challenging. This project demonstrates how to use Kyverno, a Kubernetes-native policy management tool, to enforce policies and maintain governance in your clusters.
@@ -80,6 +79,17 @@ validate:
         readinessProbe: {}
 ```
 
+### Mutation Rules
+Mutation rules automatically modify resources to meet the desired state. For example, to add default labels to all resources using the patchStrategicMerge field:
+```yaml
+mutate:
+  patchStrategicMerge:
+    metadata:
+      labels:
+        team: foo
+        environment: dev
+```
+
 ### Common operators in Validation Rules
 
 - **Equality (=)**: Checks if a value is equal to a specified value.
@@ -101,6 +111,7 @@ reliability.
 - `limit-replica-count.yaml`: Limits the maximum replica count for Deployments to avoid excessive resource usage.
 - `require-labels.yaml`: Ensures that all resources have mandatory labels for tracking.
 - `require-limits.yaml`: Enforces CPU and memory limits for Pods to prevent over-allocation.
+- `add-creator-label.yaml`: Adds a `created-by` label to Deployments and Services with the username of the user who deployed the resource.
 
 ### 🔐 Security
 
@@ -111,6 +122,7 @@ reliability.
 ### 📋 Prerequisites
 - **Kubernetes Cluster**: Use [Minikube](https://minikube.sigs.k8s.io/docs/start/) or any Kubernetes setup.
 - **kubectl**: [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) for managing Kubernetes resources.
+- **helm**: [helm](https://helm.sh/docs/intro/install/) for installing kyverno in your k8s cluster.
 
 
 ### 🔧 Steps to Apply Policies
@@ -123,13 +135,17 @@ cd kyverno-basics
 
 2. Install Kyverno in Your Cluster
 ```bash
-kubectl apply -f https://github.com/kyverno/kyverno/releases/download/v1.10.0/install.yaml
+helm repo add kyverno https://kyverno.github.io/kyverno/
+helm repo update
+helm install kyverno kyverno/kyverno -n kyverno --create-namespace
 ```
 
 3. Apply the Policies
 Navigate to the policies directory and apply all policies:
 ```bash
-kubectl apply -f policies/
+kubectl apply -f policies/best-practices
+kubectl apply -f policies/resource-management
+kubectl apply -f policies/security
 ```
 
 4. Verify the Policies
@@ -162,10 +178,37 @@ Here's what you need to do:
 Once you've made these changes, you can reapply the deployment:
 
 ```bash
-kubectl apply -f examples/fixed-deployment.yaml
+kubectl apply -f examples/invalid-deployment.yaml
 ```
 
 This should now pass the Kyverno policies you've set up in the repository.
+
+### ☑️ Verifying Kyverno Mutate Policy
+
+In addition to the validaton policies, this project also includes a Kyverno policy that automatically adds labels to Deployments and Services.
+
+This policy will add `created-by` labels to any new Deployment or Service that is created in the cluster:
+
+To verify if the policy had applied, let check the labels of the above applied `invalid-deployment.yaml`
+
+```
+kubectl create deployment nginx --image=nginx
+```
+
+After applying the Kyverno policy, you can verify that the labels were added to the Deployment:
+
+```
+kubectl get deployment nginx --show-labels
+```
+
+The output should show the following labels:
+
+```
+NAME          READY   UP-TO-DATE   AVAILABLE   AGE   LABELS
+fixed-nginx   0/1     0            0           11m   app=nginx,created-by=minikube-user,environment=production,team=platform
+```
+
+This will display the labels applied to the Deployment, including the `created-by` added by the Kyverno mutate policy.
 
 ## 💡 Alternatives to Kyverno
 - **Open Policy Agent (OPA) + Gatekeeper**: A powerful alternative that uses Rego for writing policies.
@@ -173,8 +216,3 @@ This should now pass the Kyverno policies you've set up in the repository.
 
 ## 🌟 Conclusion
 This project demonstrates how Kyverno simplifies governance in Kubernetes. By applying declarative policies, you can enforce best practices, enhance security, and ensure compliance with minimal effort.
-
-## ⏬ Read More
-- [Kyverno Documentation](https://kyverno.io/docs/introduction/)
-- [Kubernetes Policy Best Practices](https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/#best-practices-for-creating-a-manageable-set-of-deployments)
-- [Applying Policies with Kyverno](https://kyverno.io/policies/)

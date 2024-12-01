@@ -1,0 +1,19 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-labels
+spec:
+  background: false # Run the policy in foreground mode
+  rules:
+  - name: add-labels
+    match:
+      resources:
+        kinds:
+        - Deployment
+        - Service
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          labels:
+            team: platform
+            created-by: "{{request.userInfo.username}}"

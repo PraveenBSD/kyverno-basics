@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: invalid-nginx
+  name: fixed-nginx
   labels:
     app: nginx
     environment: production
@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: praveen/nginx:latest
+        image: praveenbsd/nginx:latest
         resources:
           limits:
             cpu: "500m"
