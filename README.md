@@ -80,7 +80,15 @@ validate:
         readinessProbe: {}
 ```
 
-This validation rule checks that each container in a Pod has both a liveness probe and a readiness probe configured. If a resource violates this rule, Kyverno will deny the request and provide the specified error message.
+### Common operators in Validation Rules
+
+- **Equality (=)**: Checks if a value is equal to a specified value.
+- **Inequality (!=)**: Checks if a value is not equal to a specified value.
+- **Greater Than (>)/Less Than (<)**: Checks if a value is greater or less than a specified value.
+- **Existence (?)**: Checks if a specified attribute exists in the resource.
+
+For more information on writing Kyverno policies, please refer to the official Kyverno documentation on writing [validation-rules](https://kyverno.io/docs/writing-policies/validate/).
+
 
 ## 📂 Policies in This Repository
 
@@ -88,22 +96,22 @@ This validation rule checks that each container in a Pod has both a liveness pro
 - `require-probes.yaml`: Ensures that all Pods have liveness and readiness probes for reliability.
 reliability.
 
-## 🗂️ Resource Management
+### 🗂️ Resource Management
 
 - `limit-replica-count.yaml`: Limits the maximum replica count for Deployments to avoid excessive resource usage.
 - `require-labels.yaml`: Ensures that all resources have mandatory labels for tracking.
 - `require-limits.yaml`: Enforces CPU and memory limits for Pods to prevent over-allocation.
 
-🔐 Security
+### 🔐 Security
 
 - `restrict-image-registry.yaml`: Restricts Pods to use images from a trusted container registry.
 
 ## 🧭 Tutorial
 
 ### 📋 Prerequisites
-- A running Kubernetes cluster (Minikube, EKS, GKE, or any other setup).
-- `kubectl` installed and configured.
-- Kyverno installed.
+- **Kubernetes Cluster**: Use [Minikube](https://minikube.sigs.k8s.io/docs/start/) or any Kubernetes setup.
+- **kubectl**: [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) for managing Kubernetes resources.
+
 
 ### 🔧 Steps to Apply Policies
 

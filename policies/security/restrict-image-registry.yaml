@@ -1,42 +1,32 @@
-# examples/valid/deployment-with-probes.yaml
-apiVersion: apps/v1
-kind: Deployment
+# restrict-image-registry.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
 metadata:
-  name: valid-nginx
-  labels:
-    app: nginx
-    # environment: production
-    # team: platform
+  name: restrict-image-registry
+  annotations:
+    policies.kyverno.io/title: Restrict Image Registry
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Only allow container images from praveenbsd Docker Hub repository.
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: nginx
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-      - name: nginx
-        image: praveenbsd/nginx:latest
-        resources:
-          # limits:
-          #   cpu: "500m"
-          #   memory: "512Mi"
-          requests:
-            cpu: "200m"
-            memory: "256Mi"
-        # Uncomment the below lines to enable probes
-        # livenessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: 80
-        #   initialDelaySeconds: 10
-        #   periodSeconds: 10
-        # readinessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: 80
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 5
+  validationFailureAction: enforce
+  background: true
+  rules:
+    - name: verify-registry
+      match:
+        any:
+        - resources:
+            kinds:
+            - Deployment
+            - Pod
+            - StatefulSet
+            - DaemonSet
+      validate:
+        message: "Container images must be from docker.io/praveenbsd/ repository only"
+        pattern:
+          spec:
+            template:
+              spec:
+                containers:
+                  - image: "praveenbsd/*"
