@@ -1,0 +1,29 @@
+# require-labels.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels
+  annotations:
+    policies.kyverno.io/title: Require Labels
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      All deployments must have the required labels: app, environment, and team.
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+    - name: check-required-labels
+      match:
+        any:
+        - resources:
+            kinds:
+            - Deployment
+      validate:
+        message: "The following labels are required: app, environment, team"
+        pattern:
+          metadata:
+            labels:
+              app: "?*"
+              environment: "?*"
+              team: "?*"

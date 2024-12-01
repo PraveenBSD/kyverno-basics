@@ -1,0 +1,29 @@
+# policies/best-practices/require-probes.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-probes
+  annotations:
+    policies.kyverno.io/title: Require Health Probes
+    policies.kyverno.io/category: Best Practices
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+    - name: check-probes
+      match:
+        any:
+        - resources:
+            kinds:
+            - Deployment
+      validate:
+        message: "Liveness and readiness probes are required"
+        pattern:
+          spec:
+            template:
+              spec:
+                containers:
+                - livenessProbe:
+                    periodSeconds: ">0"
+                  readinessProbe:
+                    periodSeconds: ">0"

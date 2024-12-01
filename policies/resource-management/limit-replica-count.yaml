@@ -1,0 +1,19 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: limit-replica-count
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: check-replica-count
+    match:
+      any:
+      - resources:
+          kinds:
+          - Deployment
+    validate:
+      message: "Number of replicas is limited to 5"
+      pattern:
+        spec:
+          replicas: "<= 5"
