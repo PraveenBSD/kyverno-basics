@@ -21,6 +21,7 @@ Here are the core reasons why policies in Kubernetes are essential:
 - Enforce strict rules on image registries to prevent the use of untrusted or vulnerable images.
 - Block privileged containers that could potentially escalate security risks.
 - Ensure that only authorized service accounts or users can perform sensitive operations, reducing the attack surface.
+- Automatically label resources with security classification for proper access control and monitoring
 
 ### ⚙️ Operational Best Practices
 - Ensure consistent application configurations with mandatory liveness and readiness probes. This helps keep workloads reliable and fault-tolerant by automatically checking the health of running services.
@@ -29,6 +30,7 @@ Here are the core reasons why policies in Kubernetes are essential:
 ### 📊 Resource Management
 - Set limits on replica counts to prevent over-provisioning and ensure resources are allocated optimally.
 - Require appropriate resource requests and limits for CPU and memory, ensuring that workloads don't monopolize resources and lead to instability.
+- Enforce cost center and project labels for accurate resource tracking and billing allocation
 
 ### ✅ Compliance
 - Meet regulatory or organizational standards by enforcing consistent configurations and operational practices. Policies can ensure that requirements like PCI-DSS, HIPAA, or ISO 27001 are automatically met by applying best practices.
@@ -64,6 +66,8 @@ spec:
         - Deployment
     validate:
       # Validation rules
+    mutate:
+      # Mutation rules
 ```
 
 ### Validation Rules
